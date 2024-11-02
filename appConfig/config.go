@@ -23,7 +23,7 @@ type ConfigDB struct {
 
 func NewConfig() (Config, error) {
 	var cfg Config
-	httpPort, err := strconv.Atoi(getEnv("HTTP_PORT", "8080"))
+	httpPort, err := strconv.Atoi(getEnv("HTTP_PORT", "8000"))
 	if err != nil {
 		return cfg, err
 	}
@@ -32,7 +32,7 @@ func NewConfig() (Config, error) {
 		Host:     os.Getenv("DATABASE_HOST"),
 		User:     os.Getenv("DATABASE_USER"),
 		Password: os.Getenv("DATABASE_PASSWORD"),
-		Port:     os.Getenv("DATABASE_PORT"),
+		Port:     getEnv("DATABASE_PORT", "3306"),
 		Name:     os.Getenv("DATABASE_NAME"),
 	}
 
@@ -45,7 +45,7 @@ func NewConfig() (Config, error) {
 }
 
 func (db ConfigDB) ConnectionString() string {
-	return fmt.Sprintf("%v:%v@tcp(%v:%v)/%v?charset=utf8mb4&parseTime=True&loc=Local",
+	return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		db.User,
 		db.Password,
 		db.Host,
