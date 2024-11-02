@@ -1,30 +1,56 @@
 package appConfig
 
 import (
+	"fmt"
 	"os"
 	"strconv"
 )
 
 type Config struct {
-	HttpPort         int
-	ConnectionString string
-	Storage          string // "db" or "mem"
-	JwtSecret        string
+	HttpPort  int
+	DbConfig  ConfigDB
+	Storage   string // "db" or "mem"
+	JwtSecret string
+}
+
+type ConfigDB struct {
+	Host     string
+	User     string
+	Password string
+	Port     string
+	Name     string
 }
 
 func NewConfig() (Config, error) {
 	var cfg Config
-	var err error
 	httpPort, err := strconv.Atoi(getEnv("HTTP_PORT", "8080"))
 	if err != nil {
 		return cfg, err
 	}
+
+	dbConfig := ConfigDB{
+		Host:     os.Getenv("DATABASE_HOST"),
+		User:     os.Getenv("DATABASE_USER"),
+		Password: os.Getenv("DATABASE_PASSWORD"),
+		Port:     os.Getenv("DATABASE_PORT"),
+		Name:     os.Getenv("DATABASE_NAME"),
+	}
+
 	return Config{
-		HttpPort:         httpPort,
-		ConnectionString: getEnv("CONNECTION_STRING", "root:toor@tcp(localhost:3306)/alta?charset=utf8&parseTime=True&loc=Local"),
-		Storage:          getEnv("STORAGE", "db"), // "db" or "mem"
-		JwtSecret:        getEnv("JWT_SECRET", "rahasiaBanget"),
+		HttpPort:  httpPort,
+		DbConfig:  dbConfig,
+		Storage:   getEnv("STORAGE", "db"),
+		JwtSecret: os.Getenv("JWT_SECRET"),
 	}, nil
+}
+
+func (db ConfigDB) ConnectionString() string {
+	return fmt.Sprintf("%v:%v@tcp(%v:%v)/%v?charset=utf8mb4&parseTime=True&loc=Local",
+		db.User,
+		db.Password,
+		db.Host,
+		db.Port,
+		db.Name)
 }
 
 func getEnv(key, fallback string) string {

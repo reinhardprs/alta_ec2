@@ -22,7 +22,7 @@ func main() {
 	var personModel appModel.PersonModel
 	switch cfg.Storage {
 	case "db":
-		db, err := gorm.Open(mysql.Open(cfg.ConnectionString), &gorm.Config{})
+		db, err := gorm.Open(mysql.Open(cfg.DbConfig.ConnectionString()), &gorm.Config{})
 		if err != nil {
 			panic(err)
 		}
