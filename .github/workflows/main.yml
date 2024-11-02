@@ -58,14 +58,14 @@ jobs:
           run: |
             ssh -i ec2-key.pem -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << EOF
               # Stop the current container if running
-              sudo docker ps -q --filter "name=reinhardprasetya/tugascicd:1.0.0" | grep -q . && sudo docker stop reinhardprasetya/tugascicd:1.0.0 || true
-              sudo docker rm reinhardprasetya/tugascicd:1.0.0 || true
+              sudo docker ps -q --filter "name=tugascicd" | grep -q . && sudo docker stop tugascicd || true
+              sudo docker rm tugascicd || true
 
-              # Pull the latest image from ECR
+              # Pull the latest image from Docker Hub
               sudo docker pull $IMAGE_URI
 
               # Run the new container
-              sudo docker run -d --name reinhardprasetya/tugascicd:1.0.0 -p 8000:8000 $IMAGE_URI
+              sudo docker run -d --name tugascicd -p 8000:8000 $IMAGE_URI
             EOF
 
         - name: Clean up PEM file
