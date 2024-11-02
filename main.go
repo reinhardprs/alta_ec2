@@ -6,13 +6,16 @@ import (
 	"gofrendi/structureExample/appController"
 	"gofrendi/structureExample/appMiddleware"
 	"gofrendi/structureExample/appModel"
+	"log"
 
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
 func main() {
+	loadEnv()
 	cfg, err := appConfig.NewConfig()
 	if err != nil {
 		panic(err)
@@ -38,5 +41,13 @@ func main() {
 
 	if err = e.Start(fmt.Sprintf(":%d", cfg.HttpPort)); err != nil {
 		panic(err)
+	}
+}
+
+func loadEnv() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+		panic("failed lod env")
 	}
 }
